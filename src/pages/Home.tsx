@@ -1,7 +1,11 @@
+import Nav from "../components/Nav"
 
 function Home() {
   return (
-    <div>WorldWise</div>
+    <div>
+        <Nav />
+        <h1>WorldWise</h1>
+        </div>
   )
 }
 

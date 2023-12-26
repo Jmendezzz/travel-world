@@ -1,7 +1,12 @@
+import Nav from "../components/Nav";
 
 function Product() {
   return (
-    <div>Product</div>
+    <div>
+        <Nav />
+        <h1>Product</h1>
+        
+    </div>
   )
 }
 
