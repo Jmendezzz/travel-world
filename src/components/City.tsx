@@ -5,13 +5,6 @@ import { useEffect } from "react";
 import Spinner from "./Spinner";
 import BackButton from "./BackButton";
 
-const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
-
 function City() {
   const { getCityById, currentCity, isLoading } = useCitiesContext();
   const { id } = useParams();
@@ -26,7 +19,7 @@ function City() {
     return <Spinner />;
   }
 
-  const { cityName, emoji, date, notes } = currentCity;
+  const { cityName, emoji, notes } = currentCity;
 
   return (
     <div className={styles.city}>
@@ -36,10 +29,7 @@ function City() {
           <span>{emoji}</span> {cityName}
         </h3>
       </div>
-      <div className={styles.row}>
-        <h6>You went to {cityName} on</h6>
-        <p>{formatDate(date)}</p>
-      </div>
+
 
       {notes && (
         <div className={styles.row}>
