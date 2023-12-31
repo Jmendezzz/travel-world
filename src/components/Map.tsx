@@ -14,18 +14,16 @@ import { useCitiesContext } from "../contexts/CitiesContext";
 import type { LeafletEventHandlerFnMap, Map } from "leaflet";
 import Button from "./Button";
 import { useGeolocation } from "../hooks/useGeolocation";
+import { useUrlPosition } from "../hooks/useUrlPosition";
 
 function Map() {
   const [mapPosition, setMapPosition] = useState<[number, number]>([40, 0]);
-  const [searchParams] = useSearchParams();
   const {
     isLoading: isLoadingGeo,
     position: geoPosition,
     getPosition,
   } = useGeolocation();
-
-  const lat = searchParams.get("lat");
-  const lng = searchParams.get("lng");
+  const [lat, lng] = useUrlPosition();
 
   useEffect(() => {
     if (lat && lng) {
