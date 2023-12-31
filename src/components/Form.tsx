@@ -31,6 +31,8 @@ function Form() {
   const [isLoadindGeo, setIsLoadingGeo] = useState(false);
   const [geoError, setGeoError] = useState<any>(null);
   useEffect(() => {
+    if (!lat || !lng) return;
+    
     async function fetchCityData() {
       try{
         setIsLoadingGeo(true);
@@ -56,16 +58,35 @@ function Form() {
       <Spinner /> 
     )
   }
+  if(!lat || !lng){
+    return (
+      <Message message="Please select a location on the map." /> 
+    )
+  }
 
   if(geoError){
-  
     return (
       <Message message={geoError} /> 
     )
   }
 
+  function submitHandler(e: React.FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const city = {
+      cityName,
+      country,
+      date,
+      notes,
+      position: {
+        lat,
+        lng,
+      },
+    };
+
+  }
+
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={submitHandler}>
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
