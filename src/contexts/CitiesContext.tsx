@@ -10,7 +10,7 @@ const initialValues = {
   isLoading: false,
   currentCity: {} as City,
   getCityById: (id: string) => {},
-  createCity: (city: City):void => {}
+  createCity: (city: City): void => {},
 };
 
 const CitiesContext = createContext(initialValues);
@@ -48,8 +48,23 @@ function CitiesProvider({ children }: props) {
       setIsLoading(false);
     }
   }
-  function createCity(city: City) {
-    setCities([...cities, city]);
+  async function createCity(city: City) {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${URL_API}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(city),
+      });
+      const data = await response.json();
+      setCities(cities => [...cities, data]);
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -59,7 +74,7 @@ function CitiesProvider({ children }: props) {
         isLoading,
         currentCity,
         getCityById,
-        createCity
+        createCity,
       }}
     >
       {children}

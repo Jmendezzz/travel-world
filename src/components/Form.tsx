@@ -6,12 +6,12 @@ import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 
-
 import styles from "./Form.module.css";
 import BackButton from "./BackButton";
 import { useUrlPosition } from "../hooks/useUrlPosition";
 import Message from "./Message";
 import Spinner from "./Spinner";
+import { useCitiesContext } from "../contexts/CitiesContext";
 
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
@@ -28,70 +28,73 @@ function Form() {
   const [lat, lng] = useUrlPosition();
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
-  const [date, setDate] = useState<Date | null >(new Date());
+  const [date, setDate] = useState<Date | null>(new Date());
   const [notes, setNotes] = useState("");
 
   const [isLoadindGeo, setIsLoadingGeo] = useState(false);
   const [geoError, setGeoError] = useState<any>(null);
+
+  const {createCity,isLoading} = useCitiesContext();
   useEffect(() => {
     if (!lat || !lng) return;
-    
+
     async function fetchCityData() {
-      try{
+      try {
         setIsLoadingGeo(true);
         setGeoError(null);
-        const response = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
+        const response = await fetch(
+          `${BASE_URL}?latitude=${lat}&longitude=${lng}`
+        );
         const data = await response.json();
-        if(!data.countryCode){
-          throw new Error("That doesn't seem to be a city. Please try again.😪");
+        if (!data.countryCode) {
+          throw new Error(
+            "That doesn't seem to be a city. Please try again.😪"
+          );
         }
         setCityName(data.city || data.locality || "");
         setCountry(data.countryName);
-      }catch(error){
+      } catch (error) {
         setGeoError(error.message);
-    }finally{
-      setIsLoadingGeo(false);
+      } finally {
+        setIsLoadingGeo(false);
+      }
     }
-  }
     fetchCityData();
-  },[lat, lng]);
+  }, [lat, lng]);
 
-  if(isLoadindGeo){
-    return (
-      <Spinner /> 
-    )
+  if (isLoadindGeo ) {
+    return <Spinner />;
   }
-  if(!lat || !lng){
-    return (
-      <Message message="Please select a location on the map." /> 
-    )
+  if (!lat || !lng) {
+    return <Message message="Please select a location on the map." />;
   }
 
-  if(geoError){
-    return (
-      <Message message={geoError} /> 
-    )
+  if (geoError) {
+    return <Message message={geoError} />;
   }
 
-  function submitHandler(e: React.FormEvent<HTMLFormElement>){
+  async function submitHandler(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if(!cityName || !country || !date) return;
-  
-    const city = {
+    if (!cityName || !country || !date) return;
+
+    const position ={
+      lat: Number(lat),
+      lng: Number(lng),
+    }
+    const city  = {
       cityName,
       country,
       date,
       notes,
-      position: {
-        lat,
-        lng,
-      },
+      position
     };
 
+    await createCity(city);
+    navigate("/app");
   }
 
   return (
-    <form className={styles.form} onSubmit={submitHandler}>
+    <form className={`${styles.form} ${isLoading ? styles.loading : ""}`} onSubmit={submitHandler}>
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
@@ -104,7 +107,11 @@ function Form() {
 
       <div className={styles.row}>
         <label htmlFor="date">When did you go to {cityName}?</label>
-        <DatePicker onChange={date=> setDate(date)} selected={date} dateFormat="dd/MM/yyyy" />
+        <DatePicker
+          onChange={(date) => setDate(date)}
+          selected={date}
+          dateFormat="dd/MM/yyyy"
+        />
       </div>
 
       <div className={styles.row}>
