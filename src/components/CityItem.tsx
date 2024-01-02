@@ -13,8 +13,13 @@ const formatDate = (date: Date) =>
     year: "numeric",
   }).format(new Date(date));
 
-function CityItem({ city }: props) {
-  const {currentCity} = useCitiesContext();
+function CityItem({ city}: props) {
+  const {currentCity, deleteCity} = useCitiesContext();
+
+  function deleteHandler(e: React.MouseEvent<HTMLButtonElement>){
+    e.preventDefault();
+    deleteCity(city.id);
+  }
   return (
     <li>
       <Link
@@ -26,7 +31,8 @@ function CityItem({ city }: props) {
         <span className={styles.emoji}>{city.emoji}</span>
         <h3 className={styles.name}>{city.cityName}</h3>
         <time className={styles.date}>{formatDate(city.date)}</time>
-        <button className={styles.deleteBtn}>&times;</button>
+        <button onClick={deleteHandler} className={styles.deleteBtn}>&times;</button>
+
       </Link>
     </li>
   );

@@ -11,6 +11,7 @@ const initialValues = {
   currentCity: {} as City,
   getCityById: (id: string) => {},
   createCity: (city: City): void => {},
+  deleteCity: (id: string | number): void => {},
 };
 
 const CitiesContext = createContext(initialValues);
@@ -59,10 +60,23 @@ function CitiesProvider({ children }: props) {
         body: JSON.stringify(city),
       });
       const data = await response.json();
-      setCities(cities => [...cities, data]);
+      setCities((cities) => [...cities, data]);
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  async function deleteCity(id: string | number) {
+    try {
+      setIsLoading(true);
+      await fetch(`${URL_API}/${id}`, {
+        method: "DELETE",
+      });
+      setCities((cities) => cities.filter((city) => city.id !== id));
+    } catch (error) {
+      console.log(error);
+    } finally {
       setIsLoading(false);
     }
   }
@@ -75,6 +89,7 @@ function CitiesProvider({ children }: props) {
         currentCity,
         getCityById,
         createCity,
+        deleteCity,
       }}
     >
       {children}

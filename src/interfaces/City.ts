@@ -1,5 +1,5 @@
 export interface City {
-    id?:number;
+    id:string | number;
     cityName: string;
     country:string;
     emoji?:string;
