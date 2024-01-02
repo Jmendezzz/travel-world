@@ -10,12 +10,13 @@ const initialValues = {
   isLoading: false,
   currentCity: {} as City,
   getCityById: (id: string) => {},
+  createCity: (city: City):void => {}
 };
 
 const CitiesContext = createContext(initialValues);
 
 function CitiesProvider({ children }: props) {
-  const [cities, setCities] = useState([]);
+  const [cities, setCities] = useState([] as City[]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentCity, setCurrentCity] = useState({} as City);
 
@@ -47,6 +48,9 @@ function CitiesProvider({ children }: props) {
       setIsLoading(false);
     }
   }
+  function createCity(city: City) {
+    setCities([...cities, city]);
+  }
 
   return (
     <CitiesContext.Provider
@@ -55,6 +59,7 @@ function CitiesProvider({ children }: props) {
         isLoading,
         currentCity,
         getCityById,
+        createCity
       }}
     >
       {children}
